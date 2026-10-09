@@ -31,11 +31,14 @@ import com.example.listycity.ui.theme.ListyCityTheme
 fun CityListScreen(
     cities: List<City>,
     onAddCity: (City) -> Unit,
+    onDelCity: (City) -> Unit,
     onUpdateCity: (City, City) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var newCityName by remember { mutableStateOf("") }
     var newProvinceName by remember { mutableStateOf("") }
+    var cityToDelete by remember { mutableStateOf("") }
+    var provinceToDelete by remember { mutableStateOf("") }
     var showAddCityFields by remember { mutableStateOf(false) }
     var selectedCity by remember { mutableStateOf<City?>(null) }
     var editedCityName by remember { mutableStateOf("") }
@@ -61,6 +64,48 @@ fun CityListScreen(
             }
         }
         if (showAddCityFields) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                OutlinedTextField(
+                    value = cityToDelete,
+                    onValueChange = { cityToDelete = it },
+                    label = { Text("City") },
+                    modifier = Modifier.weight(1f)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                OutlinedTextField(
+                    value = provinceToDelete,
+                    onValueChange = { provinceToDelete = it },
+                    label = { Text("Province") },
+                    modifier = Modifier.weight(1f)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Button(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    onClick = {
+                        if (cityToDelete.isNotBlank() && provinceToDelete.isNotBlank()) {
+                            onDelCity(
+                                City(
+                                    name = cityToDelete,
+                                    province = provinceToDelete
+                                )
+                            )
+
+                            cityToDelete = ""
+                            provinceToDelete = ""
+                            showAddCityFields = false
+                        }
+                    }
+                ) {
+                    Text("DELETE CITY")
+                }
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -213,6 +258,7 @@ fun CityListScreenPreview() {
                 City("Calgary", "AB")
             ),
             onAddCity = {},
+            onDelCity = {},
             onUpdateCity = { _, _ -> }
         )
     }
